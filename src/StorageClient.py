@@ -88,7 +88,7 @@ class StorageClient:
 
         print(owners_repo)
         with open(self.unseen_file,"w") as file:
-            json.dump(owners_repo,file)
+            json.dump(all_repos,file)
 
         return;
 
