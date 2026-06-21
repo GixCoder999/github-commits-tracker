@@ -1,7 +1,6 @@
 from pathlib import Path
 import json
 
-padding = "\t\t"
 
 class StorageClient:
     def __init__(self):
@@ -54,7 +53,7 @@ class StorageClient:
             print("[gctracker] No Repos Found. Please add some repos first")
             return
         
-        print("[gctracker] FORMAT:\nUser / Repo - Last time tracked")
+        print("[gctracker] FORMAT:\nUser / Repo - Last time tracked\n")
 
         for owner,owners_repos in all_repos.items():
             for repo_name,repo_data in owners_repos.items():
@@ -72,8 +71,7 @@ class StorageClient:
 
 
     def saveUnseenCommits(self,owner,repo,saved_commits)->None:
-        with open(self.unseen_file,"r") as file:
-            all_repos = json.load(file)
+        all_repos = self.load_unseen()
         
         owners_repo = all_repos.get(owner,{})
         curr_repo = owners_repo.get(repo,{})
@@ -85,6 +83,9 @@ class StorageClient:
             "unseen_commits": prev_saves,
             "last_updated": None
         }
+
+        all_repos[owner] = owners_repo
+
         print(owners_repo)
         with open(self.unseen_file,"w") as file:
             json.dump(owners_repo,file)
@@ -93,6 +94,20 @@ class StorageClient:
 
 
     def showUnseenCommits(self):
-        print("Showing Unseen Commits...\n")
+        unseen = self.load_unseen()
+        
+        print("[gctracker] FORMAT: OWNER NAME / REPO NAME: UNSEEN COMMIT URL\n")
+    
+        for owner_name, owner_unseens in unseen.items():
+            for repo_name, repo_data in owner_unseens.items():
+                
+                unseen_shas = repo_data.get("unseen_commits")
+                if not unseen_shas:
+                    print(f"No Unseen Commits for {owner_name} / {repo_name}")
+                    continue
+
+                for commit_sha in unseen_shas:
+                    print(f"{owner_name} / {repo_name}: https://github.com/{owner_name}/{repo_name}/commits/{commit_sha}")            
+
 
 storage = StorageClient()
