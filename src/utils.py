@@ -13,5 +13,17 @@ def handleShowCommand(args)->None:
         storage.showUnseenCommits()
     
 
+def handleDeleteCommand(args):
+    if args.all:
+        if args.type=="repos":
+            storage.cleanAllRepos()
+        elif args.type=="unseen":
+            storage.cleanAllUnseen()
+    elif args.type=="repos":
+        storage.cleanRepo(args.owner,args.repo)
+    elif args.type=="unseen":
+        storage.cleanUnseen(args.owner,args.repo)
+
+
 def handleExit(args)->None:
     print("Exiting...")

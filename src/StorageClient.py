@@ -3,7 +3,7 @@ import json
 
 
 class StorageClient:
-    def __init__(self):
+    def __init__(self)->None:
         self.base_dir = Path(__file__).resolve().parent
         self.data_dir = self.base_dir / "data"
 
@@ -17,6 +17,7 @@ class StorageClient:
         
         if not self.unseen_file.exists():
             self.unseen_file.write_text(json.dumps({}))
+
 
     def load_repos(self)->dict:
         if not self.repos_file.exists():
@@ -44,6 +45,20 @@ class StorageClient:
 
         with open(self.repos_file, "w") as file:
             json.dump(repos, file)
+
+
+    def cleanRepo(self,owner,repo)->None:
+        repos = self.load_repos()
+        
+        if owner in repos and repo in repos[owner]:
+            repos[owner].pop(repo)
+
+        with open(self.repos_file,"w") as f:
+            json.dump(repos,f)
+    
+
+    def cleanAllRepos(self)->None:
+        self.repos_file.write_text("{}")
 
 
     def showAllRepos(self)->None:
@@ -93,7 +108,22 @@ class StorageClient:
         return;
 
 
-    def showUnseenCommits(self):
+    def cleanAllUnseen(self)->None:
+        self.unseen_file.write_text("{}")
+
+
+    def cleanUnseen(self, owner, repo)->None:
+        unseens = self.load_unseen()
+
+        if owner in unseens and repo in unseens[owner]:
+            unseens[owner][repo]["unseen_commits"] = []
+            unseens[owner][repo]["last_updated"] = None
+
+        with open(self.unseen_file, "w") as file:
+            json.dump(unseens, file)
+
+
+    def showUnseenCommits(self)->None:
         unseen = self.load_unseen()
         
         print("[gctracker] FORMAT: OWNER NAME / REPO NAME: UNSEEN COMMIT URL\n")

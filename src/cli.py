@@ -1,5 +1,5 @@
 import argparse as ag
-from utils import handleAddRepo,handleShowCommand,handleExit
+from utils import handleAddRepo,handleShowCommand,handleDeleteCommand,handleExit
 
 def main():
     parser = ag.ArgumentParser(prog="gctrack",description="This is a github commits tracking tool")
@@ -15,6 +15,12 @@ def main():
     show_parser = subparser.add_parser("show")
     show_parser.add_argument("type",choices=["repos","unseen"])
 
+    delete_parser = subparser.add_parser("delete")
+    delete_parser.add_argument("type",choices=["repos","unseen"])
+    delete_parser.add_argument("owner",nargs="?")
+    delete_parser.add_argument("repo",nargs="?")
+    delete_parser.add_argument("--all",action="store_true")
+
     exit_parser = subparser.add_parser("exit")
     exit_parser.add_argument("--force")
 
@@ -23,6 +29,7 @@ def main():
     COMMANDS = {
         "add": handleAddRepo,
         "show": handleShowCommand,
+        "delete": handleDeleteCommand,
         "exit": handleExit
     }
 
